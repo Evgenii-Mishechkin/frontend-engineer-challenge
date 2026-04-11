@@ -1,0 +1,64 @@
+import { apiRequestPasswordReset } from '@/entities/session/auth.api'
+import {
+  AUTH_FIELD_ERROR_EMAIL_NOT_FOUND,
+  AUTH_FIELD_ERROR_INVALID_EMAIL,
+} from '@/shared/config/authFieldErrors'
+import { useAsyncFormSubmit } from '@/shared/lib/form/useAsyncFormSubmit'
+import { isValidEmail } from '@/shared/lib/validation/isValidEmail'
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+
+/** Ключ для dev-подсказки сброса пароля (также читается в ForgotPasswordSentPage). */
+export const DEV_PW_RESET_STORAGE = 'atlantis-dev-pw-reset'
+
+export function useForgotPasswordRequest() {
+  const router = useRouter()
+  const { loading, errorMessage, apiErrorFieldScope, execute, clearError } = useAsyncFormSubmit()
+  const email = ref('')
+  const emailFieldError = ref('')
+
+  function submit() {
+    clearError()
+    emailFieldError.value = ''
+    if (!isValidEmail(email.value)) {
+      emailFieldError.value = AUTH_FIELD_ERROR_INVALID_EMAIL
+      return
+    }
+    return execute(async () => {
+      const trimmed = email.value.trim()
+      const r = await apiRequestPasswordReset(trimmed)
+
+      /**
+       * Бэк всегда возвращает success: true (anti-enumeration на уровне Go).
+       * Единственный сигнал: непустой token = email найден и письмо отправлено,
+       * пустой token = email не зарегистрирован.
+       * Источник: resolver.go → resolveRequestPasswordReset всегда пишет "success": true.
+       */
+      const devToken = r.token?.trim() ?? ''
+
+      if (!devToken) {
+        emailFieldError.value = AUTH_FIELD_ERROR_EMAIL_NOT_FOUND
+        return
+      }
+
+      if (import.meta.env.DEV) {
+        sessionStorage.setItem(DEV_PW_RESET_STORAGE, JSON.stringify({ email: trimmed, token: devToken }))
+      }
+
+      await router.replace({
+        name: 'forgot-password-sent',
+        query: { email: trimmed },
+      })
+    })
+  }
+
+  return {
+    email,
+    loading,
+    errorMessage,
+    apiErrorFieldScope,
+    submit,
+    clearError,
+    emailFieldError,
+  }
+}

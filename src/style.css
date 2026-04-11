@@ -1,0 +1,153 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/**
+ * Дизайн-токены: цвета, типографика, отступы (Inter 400/500).
+ * Правки темы — здесь; в компонентах только var(--*).
+ */
+:root {
+  /* ——— Цвета ——— */
+  --color-text-primary: #1f1f27;
+  --color-text-secondary: #64748b;
+  --color-text-tertiary: #81869a;
+  /** Подзаголовки «проверьте почту» и т.п. (макет Step 2) */
+  --color-text-muted: #828282;
+  --color-text-body: #334155;
+  --color-text-inverse: #ffffff;
+  --color-text-legal: #C0C2CB;
+
+  --color-primary: #31a0f0;
+  /** Вторичная / нейтральная кнопка (светлый фон, синий текст) */
+  --color-neutral-btn-bg: #eff4fb;
+  /* Invalid в макете Orbitto (поля, подписи ошибок) */
+  --color-invalid: #d23939;
+  --color-error: #d23939;
+  --color-link: #2563eb;
+
+  --color-border-subtle: rgba(31, 31, 39, 0.08);
+  --color-text-placeholder: rgba(31, 31, 39, 0.3);
+
+  --color-surface: #ffffff;
+  --color-auth-gradient-start: #ebeff4;
+  --color-auth-gradient-end: #e4ebf3;
+
+  --color-focus-ring: #94a3b8;
+
+  /* ——— Шрифты ——— */
+  --font-family-sans: 'Inter', system-ui, sans-serif;
+  --font-family-mono: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, monospace;
+
+  /* Кегль */
+  --font-size-xs: 0.85rem;
+  --font-size-detail: 0.9rem;
+  --font-size-lead: 0.95rem;
+  --font-size-legal: 12px;
+  --font-size-body-sm: 14px;
+  --font-size-body-xs: 12px;
+  --font-size-input: 15px;
+  --font-size-base: 1rem;
+  --font-size-page-title: 1.75rem;
+  --font-size-auth-title: 32px;
+
+  /* Начертания (макет: заголовки и кнопки — medium) */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+
+  /* Интерлиньяж */
+  --line-height-none: 1;
+  --line-height-tight: 1.2;
+  --line-height-snug: 1.4;
+  --line-height-relaxed: 1.5;
+  --line-height-input: 1.6;
+
+  /* ——— Радиусы ——— */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+
+  /* ——— Обводки / слои ——— */
+  --border-width-hairline: 1px;
+  --line-height-zero: 0;
+
+  /* ——— Размеры-утилиты ——— */
+  --size-full: 100%;
+  --min-height-viewport: 100vh;
+  --min-width-flex: 0;
+
+  /* ——— Прозрачность ——— */
+  --opacity-disabled: 0.6;
+
+  /* ——— Размеры / отступы (auth split) ——— */
+  --size-form-max-width: 400px;
+  --size-auth-column-max: 560px;
+  --size-logo-height: 40px;
+  --size-logo-max-width: 200px;
+  --size-hero-img-max-width: 512px;
+  --size-hero-img-max-height: 480px;
+  --size-hero-img-vw: 58vw;
+
+  --space-auth-form-gap: 24px;
+  --space-field-block-y: 8px;
+  --space-field-toggle-gap: 8px;
+  --space-field-float-gap: 4px;
+  --space-field-min-height: 56px;
+  --space-primary-btn-top: 8px;
+  --space-tertiary-top: 8px;
+  --space-auth-main-padding-x: 80px;
+  --space-auth-main-padding-bottom: 32px;
+  --space-auth-footer-y: 32px;
+  --space-auth-footer-gap: 5px;
+  --space-auth-logo-left: 20px;
+  --space-auth-logo-top: 16px;
+
+  --height-primary-btn: 48px;
+  --min-height-auth-split: 800px;
+  --min-height-auth-right: 400px;
+
+  --auth-gradient-angle: 132.27deg;
+  /* Мобильная заглушка: ниже этой точки — MobileGateScreen. Синхр. с @media в MobileGateScreen.vue. */
+  --breakpoint-mobile-gate: 834px;
+
+  /* Типографика мобильной заглушки */
+  --font-size-mobile-gate-title: 20px;
+
+  /* Нулевые отступы (сбросы) */
+  --space-none: 0;
+
+  /* Каркас Home / простые страницы */
+  --space-page-padding: 2rem;
+  --space-page-block: 1rem;
+  --space-nav-top: 2rem;
+  --space-button-top: 1rem;
+  --space-button-x: 1rem;
+  --space-button-y: 0.5rem;
+  --size-home-max-width: 40rem;
+  --width-shell-outline: 2px;
+}
+
+/**
+ * Примитивы UI — общий слой поверх токенов (зачаток дизайн-системы).
+ * При росте проекта можно вынести в `shared/styles/primitives.css` и подключать из main.ts.
+ */
+.ui-text-link {
+  font-size: var(--font-size-body-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.ui-text-link:hover {
+  text-decoration: underline;
+}
+
+body {
+  margin: var(--space-none);
+  min-height: var(--min-height-viewport);
+  color: var(--color-text-primary);
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-base);
+  -webkit-font-smoothing: antialiased;
+}
