@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useForgotPasswordRequest } from '@/features/auth'
+import { useForgotPasswordRequest } from '@/features/auth/model/forgotPassword'
 import { isValidEmail } from '@/shared/lib/validation/isValidEmail'
 import { AuthFormWidget, AuthSplitLayout } from '@/widgets/auth'
 import AuthTextField from '@/shared/ui/AuthTextField.vue'

@@ -86,7 +86,6 @@ describe('useForgotPasswordRequest', () => {
 
   it('успех в DEV → токен сохраняется в sessionStorage', async () => {
     const originalDev = import.meta.env.DEV
-    // @ts-expect-error — перегружаем env для теста
     import.meta.env.DEV = true
 
     mockApi.mockResolvedValue({ success: true, token: 'tok-xyz' })
@@ -100,7 +99,6 @@ describe('useForgotPasswordRequest', () => {
     const stored = JSON.parse(sessionStorage.getItem(DEV_PW_RESET_STORAGE) ?? 'null')
     expect(stored).toEqual({ email: 'user@example.com', token: 'tok-xyz' })
 
-    // @ts-expect-error
     import.meta.env.DEV = originalDev
   })
 

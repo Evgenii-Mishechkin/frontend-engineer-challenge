@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useResetPasswordForm } from '@/features/auth'
+import { useResetPasswordForm } from '@/features/auth/model/resetPassword'
 import { AuthFormWidget, AuthSplitLayout } from '@/widgets/auth'
 import AuthPasswordField from '@/shared/ui/AuthPasswordField.vue'
 import AuthPrimaryButton from '@/shared/ui/AuthPrimaryButton.vue'

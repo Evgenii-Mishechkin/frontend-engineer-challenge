@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useRegisterForm } from '@/features/auth'
+import { useRegisterForm } from '@/features/auth/model/registerForm'
 import AuthPasswordField from '@/shared/ui/AuthPasswordField.vue'
 import AuthTextField from '@/shared/ui/AuthTextField.vue'
 import { AuthFormWidget, AuthSplitFooter, AuthSplitLayout } from '@/widgets/auth'

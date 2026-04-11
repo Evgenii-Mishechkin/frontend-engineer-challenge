@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useLoginForm } from '@/features/auth'
+import { useLoginForm } from '@/features/auth/model/loginForm'
 import AuthPasswordField from '@/shared/ui/AuthPasswordField.vue'
 import AuthTextField from '@/shared/ui/AuthTextField.vue'
 import { AuthFormWidget, AuthSplitFooter, AuthSplitLayout } from '@/widgets/auth'
