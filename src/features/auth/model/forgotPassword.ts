@@ -1,8 +1,5 @@
 import { apiRequestPasswordReset } from '@/entities/session/auth.api'
-import {
-  AUTH_FIELD_ERROR_EMAIL_NOT_FOUND,
-  AUTH_FIELD_ERROR_INVALID_EMAIL,
-} from '@/shared/config/authFieldErrors'
+import { AUTH_FIELD_ERROR_INVALID_EMAIL } from '@/shared/config/authFieldErrors'
 import { useAsyncFormSubmit } from '@/shared/lib/form/useAsyncFormSubmit'
 import { isValidEmail } from '@/shared/lib/validation/isValidEmail'
 import { ref } from 'vue'
@@ -29,19 +26,20 @@ export function useForgotPasswordRequest() {
       const r = await apiRequestPasswordReset(trimmed)
 
       /**
-       * Бэк всегда возвращает success: true (anti-enumeration на уровне Go).
-       * Единственный сигнал: непустой token = email найден и письмо отправлено,
-       * пустой token = email не зарегистрирован.
-       * Источник: resolver.go → resolveRequestPasswordReset всегда пишет "success": true.
+       * Бэк всегда возвращает success: true и не раскрывает, зарегистрирован ли email
+       * (anti-enumeration на уровне Go — resolver.go всегда пишет "success": true,
+       * при незнакомом email token остаётся пустым).
+       *
+       * Фронт намеренно игнорирует различие пустой/непустой token и всегда переходит
+       * на страницу «письмо отправлено». Это необходимо, чтобы исключить возможность
+       * перебора зарегистрированных адресов через реакцию UI.
+       *
+       * В dev-режиме токен сохраняется в sessionStorage только когда он непустой —
+       * это не раскрывает информацию пользователям, т.к. доступно лишь в сборке DEV.
        */
       const devToken = r.token?.trim() ?? ''
 
-      if (!devToken) {
-        emailFieldError.value = AUTH_FIELD_ERROR_EMAIL_NOT_FOUND
-        return
-      }
-
-      if (import.meta.env.DEV) {
+      if (import.meta.env.DEV && devToken) {
         sessionStorage.setItem(DEV_PW_RESET_STORAGE, JSON.stringify({ email: trimmed, token: devToken }))
       }
 

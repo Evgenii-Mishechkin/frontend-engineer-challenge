@@ -1,9 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { withSetup } from '@/tests/withSetup'
-import {
-  AUTH_FIELD_ERROR_EMAIL_NOT_FOUND,
-  AUTH_FIELD_ERROR_INVALID_EMAIL,
-} from '@/shared/config/authFieldErrors'
+import { AUTH_FIELD_ERROR_INVALID_EMAIL } from '@/shared/config/authFieldErrors'
 import { DEV_PW_RESET_STORAGE, useForgotPasswordRequest } from './forgotPassword'
 
 // Мок API-слоя — изолируем HTTP от логики composable
@@ -43,26 +40,36 @@ describe('useForgotPasswordRequest', () => {
     expect(result.emailFieldError.value).toBe(AUTH_FIELD_ERROR_INVALID_EMAIL)
   })
 
-  it('email не найден (пустой token) → emailFieldError, нет редиректа', async () => {
+  it('email не найден (пустой token) → всё равно редирект, нет ошибки поля (anti-enumeration)', async () => {
     mockApi.mockResolvedValue({ success: true, token: '' })
-    const { result, router } = withSetup(() => useForgotPasswordRequest())
-    const pushSpy = vi.spyOn(router, 'replace')
+    const { result, router } = withSetup(() => useForgotPasswordRequest(), {
+      routes: [{ path: '/forgot-password/sent', name: 'forgot-password-sent' }],
+    })
+    const replaceSpy = vi.spyOn(router, 'replace')
 
     result.email.value = 'unknown@example.com'
     await result.submit()
 
-    expect(result.emailFieldError.value).toBe(AUTH_FIELD_ERROR_EMAIL_NOT_FOUND)
-    expect(pushSpy).not.toHaveBeenCalled()
+    expect(result.emailFieldError.value).toBe('')
+    expect(replaceSpy).toHaveBeenCalledWith(
+      expect.objectContaining({ name: 'forgot-password-sent' }),
+    )
   })
 
-  it('email не найден (null token) → emailFieldError', async () => {
+  it('email не найден (null token) → всё равно редирект (anti-enumeration)', async () => {
     mockApi.mockResolvedValue({ success: true, token: null })
-    const { result } = withSetup(() => useForgotPasswordRequest())
+    const { result, router } = withSetup(() => useForgotPasswordRequest(), {
+      routes: [{ path: '/forgot-password/sent', name: 'forgot-password-sent' }],
+    })
+    const replaceSpy = vi.spyOn(router, 'replace')
 
     result.email.value = 'unknown@example.com'
     await result.submit()
 
-    expect(result.emailFieldError.value).toBe(AUTH_FIELD_ERROR_EMAIL_NOT_FOUND)
+    expect(result.emailFieldError.value).toBe('')
+    expect(replaceSpy).toHaveBeenCalledWith(
+      expect.objectContaining({ name: 'forgot-password-sent' }),
+    )
   })
 
   it('успех → редирект на forgot-password-sent с email в query', async () => {
