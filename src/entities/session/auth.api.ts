@@ -56,11 +56,6 @@ const M_RESET_PASSWORD = `
   }
 `
 
-const M_DELETE_MY_ACCOUNT = `
-  mutation DeleteMyAccount {
-    deleteMyAccount
-  }
-`
 
 export type LoginResult = {
   accessToken: string
@@ -163,15 +158,3 @@ export async function apiResetPassword(
   }
 }
 
-/** Удаление текущего пользователя (Bearer access token). */
-export async function apiDeleteMyAccount(accessToken: string): Promise<void> {
-  const r = await graphqlRequest<{ deleteMyAccount: boolean }>(M_DELETE_MY_ACCOUNT, {
-    accessToken,
-  })
-  if (r.errors?.length) {
-    throw new Error(firstGraphQLErrorMessage(r.errors))
-  }
-  if (r.data?.deleteMyAccount !== true) {
-    throw new Error('Delete account failed')
-  }
-}

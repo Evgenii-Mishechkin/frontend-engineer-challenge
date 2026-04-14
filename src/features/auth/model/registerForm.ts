@@ -40,6 +40,22 @@ export function useRegisterForm() {
       } catch (e) {
         const msg = e instanceof Error ? e.message.toLowerCase() : ''
         if (msg.includes('email already registered')) {
+          /**
+           * TODO: user enumeration via registration endpoint.
+           *
+           * Раскрытие факта существования email нарушает требования OWASP ASVS
+           * (V2.7 — Out of Band Verifier Requirements) и CWE-204 (Observable
+           * Response Discrepancy). Атакующий может перебирать адреса, отправляя
+           * POST-запросы и анализируя inline-ошибку под полем.
+           *
+           * Рекомендуемое устранение (в порядке приоритета):
+           *   1. Перейти на email-confirmation flow: всегда возвращать нейтральный
+           *      ответ («Если адрес свободен, письмо с подтверждением отправлено»),
+           *      фактическое состояние сообщать только в письме.
+           *   2. Ввести rate limiting на уровне API (по IP и по email) совместно
+           *      с CAPTCHA для снижения практической применимости атаки при
+           *      сохранении текущего UX.
+           */
           emailFieldError.value = AUTH_FIELD_ERROR_EMAIL_ALREADY_REGISTERED
           return
         }

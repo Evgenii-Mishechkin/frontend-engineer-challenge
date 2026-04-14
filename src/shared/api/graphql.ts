@@ -9,6 +9,17 @@ export type GraphQLResponse<TData> = {
   errors?: GraphQLErrorPayload[]
 }
 
+/** Ошибка HTTP-транспорта с кодом статуса. Используется интерсептором для перехвата 401. */
+export class HttpError extends Error {
+  constructor(
+    public readonly status: number,
+    statusText: string,
+  ) {
+    super(`GraphQL: HTTP ${status} ${statusText}`.trim())
+    this.name = 'HttpError'
+  }
+}
+
 /**
  * Один POST на `/graphql` с телом `{ query, variables }`.
  * Для защищённых операций передайте access token.
@@ -48,7 +59,7 @@ export async function graphqlRequest<TData>(
   }
 
   if (!res.ok) {
-    throw new Error(`GraphQL: HTTP ${res.status} ${res.statusText}`.trim())
+    throw new HttpError(res.status, res.statusText)
   }
 
   return body as GraphQLResponse<TData>

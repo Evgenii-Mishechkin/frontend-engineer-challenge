@@ -14,31 +14,31 @@ const router = createRouter({
     {
       path: '/login',
       name: 'login',
-      meta: { authShowHero: true },
+      meta: { authShowHero: true, guestOnly: true },
       component: () => import('@/pages/LoginPage.vue'),
     },
     {
       path: '/register',
       name: 'register',
-      meta: { authShowHero: true },
+      meta: { authShowHero: true, guestOnly: true },
       component: () => import('@/pages/RegisterPage.vue'),
     },
     {
       path: '/forgot-password',
       name: 'forgot-password',
-      meta: { authShowHero: false },
+      meta: { authShowHero: false, guestOnly: true },
       component: () => import('@/pages/ForgotPasswordPage.vue'),
     },
     {
       path: '/forgot-password/sent',
       name: 'forgot-password-sent',
-      meta: { authShowHero: false },
+      meta: { authShowHero: false, guestOnly: true },
       component: () => import('@/pages/ForgotPasswordSentPage.vue'),
     },
     {
       path: '/reset-password',
       name: 'reset-password',
-      meta: { authShowHero: false },
+      meta: { authShowHero: false, guestOnly: true },
       component: () => import('@/pages/ResetPasswordPage.vue'),
     },
     {
@@ -74,7 +74,7 @@ router.beforeEach((to) => {
     }
   }
 
-  if (to.name === 'login' && session.isAuthenticated) {
+  if (to.meta.guestOnly && session.isAuthenticated) {
     return { name: 'home' }
   }
 

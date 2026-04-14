@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
-import { apiDeleteMyAccount, apiLogin, apiLogout, apiRefresh } from '@/entities/session/auth.api'
+import { apiLogin, apiLogout, apiRefresh } from '@/entities/session/auth.api'
+import { apiDeleteMyAccount } from '@/entities/session/protectedApi'
 import {
   clearPersistedSession,
   loadPersistedSession,
@@ -69,7 +70,8 @@ export const useSessionStore = defineStore('session', () => {
    * Ротация пары токенов на бэкенде. При ошибке сессия сбрасывается.
    * Повторные вызовы, пока идёт запрос, возвращают тот же Promise (anti-race).
    *
-   * Вызывается из HTTP-интерсептора при 401 (планируется в shared/api/httpClient).
+   * Вызывается автоматически из graphqlRequestWithAuth при HTTP 401.
+   * См. entities/session/graphqlWithAuth.ts.
    */
   async function refreshAccessToken(): Promise<boolean> {
     const rt = refreshToken.value
@@ -109,12 +111,11 @@ export const useSessionStore = defineStore('session', () => {
 
   /** Удаление учётной записи на сервере и локальная очистка сессии. */
   async function deleteAccount(): Promise<void> {
-    const at = accessToken.value
-    if (!at) {
+    if (!accessToken.value) {
       clearSession()
       return
     }
-    await apiDeleteMyAccount(at)
+    await apiDeleteMyAccount()
     clearSession()
   }
 

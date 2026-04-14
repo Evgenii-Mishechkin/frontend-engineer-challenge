@@ -25,18 +25,6 @@ export function useForgotPasswordRequest() {
       const trimmed = email.value.trim()
       const r = await apiRequestPasswordReset(trimmed)
 
-      /**
-       * Бэк всегда возвращает success: true и не раскрывает, зарегистрирован ли email
-       * (anti-enumeration на уровне Go — resolver.go всегда пишет "success": true,
-       * при незнакомом email token остаётся пустым).
-       *
-       * Фронт намеренно игнорирует различие пустой/непустой token и всегда переходит
-       * на страницу «письмо отправлено». Это необходимо, чтобы исключить возможность
-       * перебора зарегистрированных адресов через реакцию UI.
-       *
-       * В dev-режиме токен сохраняется в sessionStorage только когда он непустой —
-       * это не раскрывает информацию пользователям, т.к. доступно лишь в сборке DEV.
-       */
       const devToken = r.token?.trim() ?? ''
 
       if (import.meta.env.DEV && devToken) {
