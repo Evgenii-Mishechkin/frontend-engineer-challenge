@@ -1,5 +1,7 @@
 /// <reference types="vite/client" />
 
+import 'vue-router'
+
 interface ImportMetaEnv {
   readonly VITE_GRAPHQL_URL: string
 }
